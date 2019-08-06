@@ -25,13 +25,17 @@ pub fn decrypt(hex_string: &str) -> (String, char, i32) {
     (result, code, max_score)
 }
 
-fn xor(encrypted: &str, code: char) -> String{
+pub fn xor(encrypted: &str, code: char) -> String{
     
     let result = encrypted.chars().map(|a|
     {
-        (a as u8 ^ code as u8) as char
+        xor_char(a, code)
     }).collect();
     result
+}
+
+pub fn xor_char(text: char, code: char) -> char {
+    (text as u8 ^ code as u8) as char
 }
 
 /// Returns the ASCII String when provided a hex representation of the string
