@@ -12,7 +12,7 @@ fn main() {
 /// let base64 = String::new("SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t");
 /// assert_eq!(hex_2_base64(&hex), base64);
 /// ```
-fn hex_2_base64(hex: &String) -> String {
+fn hex_2_base64(hex: &str) -> String {
     // println!("Chars: {:?}", hex.chars());
     let bytes = hex.chars().map(|ch| 
         match ch.to_digit(16) {
@@ -20,7 +20,9 @@ fn hex_2_base64(hex: &String) -> String {
             None => 0,
     } as u16
     );
+    // combine next loop
     let mut base64_values: Vec<u16> = Vec::new(); 
+    // chunks.map so i get tuples
     for mut combination in &bytes.chunks(3){
         let elem0 = match combination.next() {
             Some(num) => num,
@@ -34,6 +36,7 @@ fn hex_2_base64(hex: &String) -> String {
             Some(num) => num,
             None => 0,
         };
+        // use bitwisehere
         let two_six_bits = (elem0 * u16::pow(2, 8) + elem1 * u16::pow(2, 4) + elem2)as u16;
         let two_pow_6 = u8::pow(2,6) as u16;
         base64_values.insert(0, two_six_bits/two_pow_6);

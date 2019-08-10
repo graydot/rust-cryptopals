@@ -1,7 +1,8 @@
+mod utils;
 mod set1_c3;
 use std::fs::File;
 use std::io::Read;
-use std::str::FromStr;
+
 
 
 fn main() -> std::io::Result<()> {
@@ -15,7 +16,7 @@ fn main() -> std::io::Result<()> {
 
     for line in lines {
         let (scored_string, _code) = return_best_scored(&line);
-        let scored_score = set1_c3::score_etaoin_shrdlu(&scored_string);
+        let scored_score = utils::score(&scored_string);
         if scored_score > max_score {
             max_elem = scored_string;
             max_score = scored_score;
@@ -29,8 +30,7 @@ fn main() -> std::io::Result<()> {
 /// string. Return unchanged if that score is higher
 fn return_best_scored(line: &str) -> (String, char) {
     let string = set1_c3::hex_to_ascii(&line);
-    // println!("{}", string);
-    let original_score: i32 = set1_c3::score_etaoin_shrdlu(&string);
+    let original_score: i32 = utils::score(&string);
     let (decrypted, code, new_score) = set1_c3::decrypt(&line);
     if new_score > original_score {
         return (decrypted, code)
