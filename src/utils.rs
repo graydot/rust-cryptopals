@@ -109,6 +109,36 @@ pub fn hex_to_ascii(hex_str: &str) -> String {
     return_string
 }
 
+/// Returns the Hex Representation of an ASCII String's byte representation
+pub fn bytes_to_hex(bytes: &[u8]) -> String {
+    bytes.iter().map(|byte| {
+        
+    })
+    // FIXME: may fail if len is not even.
+    let mut return_string = String::new();
+    while chars.size_hint().0 > 0 {
+        let hex1: u8 = match chars.next() {
+            Some(ch) => match ch.to_digit(16) {
+                Some(val) => val as u8,
+                None => 0,
+            },
+            None => 0
+        };
+        let hex2: u8 = match chars.next() {
+            Some(ch) => match ch.to_digit(16) {
+                Some(val) => val as u8,
+                None => 0,
+            },
+            None => 0
+        };
+        let ascii_val = hex1 * u8::pow(2, 4) + hex2;
+        return_string.push(ascii_val as char);
+    }
+        
+    
+    return_string
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
