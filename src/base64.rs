@@ -1,11 +1,9 @@
 use std::num::ParseIntError;
+use std::collections::HashMap;
+
 const BASE64_MAP: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-pub fn hex_to_bytes(hex: &str) -> Result<Vec<u8>, ParseIntError> {
-    hex.as_bytes().chunks(2).map(|chunk| {
-        u8::from_str_radix(&format!("{}{}", char::from(chunk[0]), char::from(chunk[1])), 16)
-    }).collect()
-}
+
 
 pub fn bytes_to_base64(bytes: &[u8]) -> String {
     bytes.chunks(3).fold(String::new(), |mut acc, chunk| {
@@ -21,6 +19,37 @@ pub fn bytes_to_base64(bytes: &[u8]) -> String {
         acc
     })
 }
+
+pub fn base64_to_ascii(text: &str) -> String {
+    // FIXME: cache this
+    let mut base64_rev_map = BASE64_MAP.iter().enumerate().fold(HashMap::new(), |mut acc, (i,ch)|{
+        acc.insert(ch, i as u8);
+        acc
+    });
+
+    base64_rev_map.insert(&(0 as u8), 0 as u8);
+    let result = text.as_bytes().chunks(4).fold(String::new(), |mut acc, chunk| {
+        let mut chunk_vec = chunk.to_vec();
+        for _ in 0..(4-chunk_vec.len()) {
+            chunk_vec.push(0 as u8);
+        }
+        let a = chunk_vec.remove(0);
+        let first = base64_rev_map.get(&a).unwrap();
+        let second = base64_rev_map.get(&chunk_vec.remove(0)).unwrap();
+        let third = base64_rev_map.get(&chunk_vec.remove(0)).unwrap();
+        let fourth = base64_rev_map.get(&chunk_vec.remove(0)).unwrap();
+    
+
+        acc.push((first << 2 | second >> 4) as char);
+        acc.push((second << 4 | third >> 2) as char);
+        acc.push((third << 6 | fourth) as char);
+
+        acc
+    }).to_string();
+    result
+}
+
+
 
 #[cfg(test)]
 mod tests {
