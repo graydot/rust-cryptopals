@@ -1,20 +1,30 @@
 use cryptopals::utils::*;
 use cryptopals::base64::*;
-use openssl::symm::{decrypt, Cipher};
+use std::collections::HashMap;
+
 
 const CODE:&[u8] = b"YELLOW SUBMARINE";
 
 pub fn main() {
     let lines = get_file_lines("data/set1_c8.txt").unwrap();
 
-    let min = lines.iter().map(|line|{
+    let min = lines.iter().enumerate().map(|(lno,line)|{
         let encrypted_vector = hex_to_bytes(&line).unwrap();
         let encrypted_bytes = encrypted_vector.as_slice();
-        (average_hamming_distance(encrypted_bytes, 16 as u32), encrypted_vector)
-    }).min_by(|a,b| {
+        let mut map = HashMap::new();
+        encrypted_bytes.chunks(16).for_each(|ch| {
+            let entry = map.entry(ch).or_insert(0u32);
+            *entry += 1;
+        });
+        let total: u32 = map.values().sum();
+        let entries = map.len() as u32;
+        let score: u32 = total - entries;
+        (score, lno, encrypted_vector)
+    }).max_by(|a,b| {
         a.0.partial_cmp(&b.0).unwrap()
     });
-    println!("{:?}", bytes_to_string(&min.unwrap().1));
+    let (score, line_no, vector) = &min.unwrap();
+    println!("Line: {}, Value: {:?}, Score: {}", line_no, bytes_to_string(vector), score);
 
     
     

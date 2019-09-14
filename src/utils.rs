@@ -170,6 +170,7 @@ pub fn ascii_to_hex(text: char) -> String {
     format!("{:x}{:x}", digit1, digit2)
 }
 
+
 pub fn get_file_contents(file_name: &str) -> String {
     let lines = get_file_lines(file_name).unwrap();
     lines.iter().fold(String::new(), |mut acc, line| {
@@ -195,7 +196,8 @@ mod tests {
 
     #[test]
     fn test_hamming_distance() {
-        assert_eq!(hamming_distance("", ""), 0);
-        assert_eq!(hamming_distance("this is a test", "wokka wokka!!!"), 37);
+        assert_eq!(hamming_distance(b"", b""), 0);
+        assert_eq!(hamming_distance(b"this is a test", b"wokka wokka!!!"), 37);
     }
+    
 }

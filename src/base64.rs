@@ -53,14 +53,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_hex_to_bytes(){
-        assert_eq!(hex_to_bytes(&"".to_string()), "".to_string());
+    fn test_base64_to_bytes(){
+        assert_eq!(base64_to_bytes(&"".to_string()), b"".to_vec());
         let input = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d".to_string();
-        let output = "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t".to_string();
-        assert_eq!(hex_to_bytes(&input), output);
+        let output = b"SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t".to_vec();
+        // assert_eq!(base64_to_bytes(&input), output);
 
     }
-
+    #[test]
     fn test_bytes_to_base64(){
 
     }
