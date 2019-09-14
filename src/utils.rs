@@ -50,16 +50,19 @@ pub fn score(text: &str) -> f64 {
         plain_histogram.insert(tuple.0.to_string(), tuple.1);
     }
     let mut chi_score:f64 = 0.0;
-    let lower_text = text.to_ascii_lowercase();
 
     let mut text_histogram = HashMap::new();
     let mut nonalpha_count = 0;
-    for ch in lower_text.chars() {
+    let mut uppercase_count = 0;
+
+    for ch in text.chars() {
         if ch.is_alphabetic() {
-            *text_histogram.entry(ch.to_string()).or_insert(0) += 1;
+            *text_histogram.entry(ch.to_lowercase().to_string()).or_insert(0) += 1;
+            if ch.is_uppercase() {
+                uppercase_count += 1;
+            }
         } else {
-            nonalpha_count += 1;
-            
+            nonalpha_count += 1;   
         }
     }
     let len = text.len();
@@ -70,7 +73,7 @@ pub fn score(text: &str) -> f64 {
         let chi_squared = f64::abs(f64::powf((exist - expect) as f64, 2 as f64) / (expect + exist) as f64);
         chi_score += chi_squared;
     }
-    chi_score * (nonalpha_count as f64/len as f64)
+    (chi_score + uppercase_count as f64/len as f64) * (nonalpha_count as f64/len as f64)
 }
 
 /// Given an ascii representation of a string, return a tuple with the highest ranked
@@ -79,7 +82,7 @@ pub fn decrypt_by_chars(ascii_str: &str) -> (String, char, f64) {
     let mut min_score: f64 = score(ascii_str);
     let mut result: String = ascii_str.to_string();
     let mut code = ' ';
-    for ch in (b'A'..b'Z').chain(b'0'..b'9') {
+    for ch in (b'a'..b'z').chain(b'0'..b'9').chain(b'A'..b'Z') {
         let plain_text = xor(ascii_str, ch as char);
         // Use the new score function to solve puzzle 4
         let score_val: f64 = score(&plain_text);
