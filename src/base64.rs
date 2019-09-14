@@ -19,7 +19,7 @@ pub fn bytes_to_base64(bytes: &[u8]) -> String {
     })
 }
 
-pub fn base64_to_ascii(text: &str) -> String {
+pub fn base64_to_bytes(text: &str) -> Vec<u8> {
     // FIXME: cache this
     let mut base64_rev_map = BASE64_MAP.iter().enumerate().fold(HashMap::new(), |mut acc, (i,ch)|{
         acc.insert(ch, i as u8);
@@ -27,7 +27,7 @@ pub fn base64_to_ascii(text: &str) -> String {
     });
 
     base64_rev_map.insert(&(0 as u8), 0 as u8);
-    let result = text.as_bytes().chunks(4).fold(String::new(), |mut acc, chunk| {
+    let result = text.as_bytes().chunks(4).fold(Vec::<u8>::new(), |mut acc, chunk| {
         let mut chunk_vec = chunk.to_vec();
         for _ in 0..(4-chunk_vec.len()) {
             chunk_vec.push(0 as u8);
@@ -37,10 +37,9 @@ pub fn base64_to_ascii(text: &str) -> String {
         let third = base64_rev_map.get(&chunk_vec.remove(0)).unwrap();
         let fourth = base64_rev_map.get(&chunk_vec.remove(0)).unwrap();
     
-
-        acc.push((first << 2 | second >> 4) as char);
-        acc.push((second << 4 | third >> 2) as char);
-        acc.push((third << 6 | fourth) as char);
+        acc.push(first << 2 | second >> 4);
+        acc.push(second << 4 | third >> 2);
+        acc.push(third << 6 | fourth);
 
         acc
     });

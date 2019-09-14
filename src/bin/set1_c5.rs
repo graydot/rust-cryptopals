@@ -11,26 +11,13 @@ fn main() {
 }
 
 pub fn repeating_key_xor(text: &str, code: &str) -> String {
-    let mut code_chars = code.chars();
+    let mut code_bytes = code.as_bytes().iter().cycle();
     let mut code_i = 0;
     let mut encrypted_text = String::new();
-    for t in text.chars() {
-        // if t == '\n' {
-        //     encrypted_text.push_str("\n");
-        //     continue;
-        // }
-        let code_char = match code_chars.next() {
-            Some(ch) => ch,
-            None => {
-                code_chars = code.chars();
-                match code_chars.next() {
-                    Some(ch) => ch,
-                    None => ' ',
-                }
-            }
-        };      
-        let xored_char = xor_char(t, code_char);
-        let hex = ascii_to_hex(xored_char);
+    for t in text.as_bytes().iter() {
+        let code_byte = code_bytes.next().unwrap();
+        let xored_byte = xor_byte(t, code_byte);
+        let hex = ascii_to_hex(xored_byte as char);
         encrypted_text.push_str(&hex);
     }
     encrypted_text

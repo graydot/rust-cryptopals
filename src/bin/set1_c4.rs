@@ -12,17 +12,17 @@ fn main() -> std::io::Result<()> {
 
     let lines = get_lines(&contents);
     let mut min_score = f64::MAX;
-    let mut min_elem = "".to_string();
+    let mut min_elem = Vec::new();
 
     for line in lines {
-        let (scored_string, _, scored_score) = decrypt_by_chars(&hex_to_ascii(&line));
+        let (scored_string, _, scored_score) = decrypt_by_chars(&hex_to_bytes(&line).unwrap());
         // println!("{}", scored_score);
         if scored_score < min_score {
             min_elem = scored_string;
             min_score = scored_score;
         }   
     }
-    println!("{}", min_elem);
+    println!("{}", bytes_to_string(min_elem.as_slice()));
     Ok(())
 }
 
