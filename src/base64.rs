@@ -1,4 +1,3 @@
-use std::num::ParseIntError;
 use std::collections::HashMap;
 
 const BASE64_MAP: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
