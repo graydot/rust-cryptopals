@@ -73,7 +73,7 @@ pub fn score(text: &str) -> f64 {
         let chi_squared = f64::abs(f64::powf((exist - expect) as f64, 2 as f64) / (expect + exist) as f64);
         chi_score += chi_squared;
     }
-    (chi_score + uppercase_count as f64/len as f64) * (nonalpha_count as f64/len as f64)
+    (chi_score + uppercase_count as f64/(len - nonalpha_count) as f64) * (nonalpha_count as f64/len as f64)
 }
 
 /// Given an ascii representation of a string, return a tuple with the highest ranked

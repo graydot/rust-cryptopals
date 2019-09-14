@@ -33,8 +33,7 @@ pub fn base64_to_ascii(text: &str) -> String {
         for _ in 0..(4-chunk_vec.len()) {
             chunk_vec.push(0 as u8);
         }
-        let a = chunk_vec.remove(0);
-        let first = base64_rev_map.get(&a).unwrap();
+        let first = base64_rev_map.get(&chunk_vec.remove(0)).unwrap();
         let second = base64_rev_map.get(&chunk_vec.remove(0)).unwrap();
         let third = base64_rev_map.get(&chunk_vec.remove(0)).unwrap();
         let fourth = base64_rev_map.get(&chunk_vec.remove(0)).unwrap();
@@ -45,7 +44,7 @@ pub fn base64_to_ascii(text: &str) -> String {
         acc.push((third << 6 | fourth) as char);
 
         acc
-    }).to_string();
+    });
     result
 }
 

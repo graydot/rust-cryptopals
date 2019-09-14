@@ -3,6 +3,7 @@ use cryptopals::base64::*;
 use std::fs::File;
 use std::io::Read;
 use std::collections::HashMap;
+use std::f64;
 
 /// Minimum size of the key
 const KEY_LOWER: u32 = 2;
@@ -20,7 +21,6 @@ fn get_file_contents(file_name: &str) -> std::io::Result<(String)> {
     f.read_to_string(&mut contents);
     
     Result::Ok(contents.lines().fold(String::new(), |mut acc, line| {
-
         acc.push_str(line.trim_end_matches('=').trim_start_matches('/'));
         acc
     }))
@@ -32,8 +32,6 @@ fn get_key_lengths(encrypted_text: &str) -> Vec<u32> {
     //FIXME
     for i in KEY_LOWER..(KEY_UPPER+1) {
         let key_size: usize = i as usize;
-        // let mut chars = contents.chars();
-
         let first_charblob = &encrypted_text[0..key_size];
         let second_charblob = &encrypted_text[key_size..key_size*2];
         let third_charblob = &encrypted_text[key_size*2..key_size*3];
@@ -49,7 +47,7 @@ fn get_key_lengths(encrypted_text: &str) -> Vec<u32> {
         ));
     }
     hamming_distances.sort_by(|a,b| a.1.partial_cmp(&b.1).unwrap());
-hamming_distances[0..3].iter().
+    hamming_distances[0..3].iter().
         map(|tuple| tuple.0 as u32).collect::<Vec<u32>>()
 }
 
@@ -95,16 +93,13 @@ fn break_repeat_xor(file_name: &str) -> std::io::Result<()> {
     
     let encrypted_base64: &str = &get_file_contents(file_name).unwrap();
     let encrypted_ascii: &str = &base64_to_ascii(encrypted_base64);
-    // println!("{}", encrypted_ascii);
 
     let key_lengths = get_key_lengths(encrypted_ascii);
-    // println!("Possible Key lengths {:?}", key_lengths);
+    let mut min_score: f64 = f64::MAX;
+    let mut plain_text = "".to_string();
+    let mut code_key = "".to_string();
     
     for i in key_lengths {
-        println!("================");
-        println!("================");
-        println!("================");
-        println!("================");
         let blocks = get_transposed_blocks(encrypted_ascii, i);
         let highscores: Vec<(String, char, f64)> = blocks.iter().map(|block|{
             let ascii_str = block.iter().fold(String::new(), |mut acc, ch|{
@@ -115,11 +110,13 @@ fn break_repeat_xor(file_name: &str) -> std::io::Result<()> {
             decrypt_by_chars(&ascii_str)
         }).collect();
         let (decrypted_text, key, full_text_score) = transpose_candidates_back(highscores);
-        println!("Decrypted: {}", decrypted_text);
-        println!("Key: ###### {} ######", key);
-        println!("Decrypted Score: {}", full_text_score);
+        if full_text_score < min_score {
+            min_score = full_text_score;
+            plain_text = decrypted_text;
+            code_key = key;
+        }
     };
-
+    println!("Plaintext: {}, Code: {}, Score: {}", plain_text, code_key, min_score);
     
     
     
