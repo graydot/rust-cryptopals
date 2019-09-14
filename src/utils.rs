@@ -15,6 +15,21 @@ pub fn hamming_distance(text1: &[u8], text2: &[u8]) -> u32 {
     distance
 }
 
+pub fn average_hamming_distance(text: &[u8], key_size: u32 ) -> f32 {
+    let i = key_size as usize;
+    let first_charblob = &text[0..i];
+    let second_charblob = &text[i..i*2];
+    let third_charblob = &text[i*2..i*3];
+    let fourth_charblob = &text[i*3..i*4];
+    let i_float = i as f32;
+    let avg_distance = (
+        hamming_distance(&first_charblob, &second_charblob) as f32 + 
+        hamming_distance(&second_charblob, &third_charblob) as f32 +
+        hamming_distance(&third_charblob, &fourth_charblob) as f32)/ (i_float * 3f32);
+
+    avg_distance
+}
+
 pub fn score(text: &[u8]) -> f64 {
     let plain_histogram_raw = vec!(
         ("a",8.167,),
@@ -155,15 +170,22 @@ pub fn ascii_to_hex(text: char) -> String {
     format!("{:x}{:x}", digit1, digit2)
 }
 
-pub fn get_file_contents(file_name: &str) -> std::io::Result<(String)> {
+pub fn get_file_contents(file_name: &str) -> String {
+    let lines = get_file_lines(file_name).unwrap();
+    lines.iter().fold(String::new(), |mut acc, line| {
+        acc.push_str(line);
+        acc
+    })
+}
+
+pub fn get_file_lines(file_name: &str) -> std::io::Result<(Vec<String>)> {
     let mut f = File::open(file_name)?;
     let mut contents = String::new();
     f.read_to_string(&mut contents);
-    Result::Ok(contents.lines().fold(String::new(), |mut acc, line| {
-        acc.push_str(line.trim_end_matches('='));
+    Result::Ok(contents.lines().fold(Vec::new(), |mut acc, line| {
+        acc.push(line.trim_end_matches('=').to_string());
         acc
     }))
-
 }
 
 

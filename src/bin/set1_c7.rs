@@ -5,7 +5,7 @@ use openssl::symm::{decrypt, Cipher};
 const CODE:&[u8] = b"YELLOW SUBMARINE";
 
 pub fn main() {
-    let file_contents = get_file_contents("data/set1_c7.txt").unwrap();
+    let file_contents = get_file_contents("data/set1_c7.txt");
     let encrypted_vector = base64_to_bytes(&file_contents);
     let encrypted_bytes = encrypted_vector.as_slice();
     let cipher = Cipher::aes_128_ecb();
