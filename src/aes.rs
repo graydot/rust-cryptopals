@@ -3,7 +3,19 @@ use crate::pk7::*;
 use aes::block_cipher_trait::generic_array::GenericArray;
 use aes::block_cipher_trait::BlockCipher;
 use aes::Aes128;
+use openssl::symm::{encrypt, decrypt, Cipher};
 
+pub fn encrypt_ebc(plaintext: &[u8], key: &[u8]) -> Vec<u8>{
+    let cipher = Cipher::aes_128_ecb();
+    let iv: Option<&[u8]> = None;
+    encrypt(cipher, key, None, &plaintext).unwrap()
+}
+
+pub fn decrypt_ebc(cipher_text: &[u8], key: &[u8]) -> Vec<u8> {
+    let cipher = Cipher::aes_128_ecb();
+    let iv: Option<&[u8]> = None;
+    decrypt(cipher, key, None, &cipher_text).unwrap()
+}
 
 pub fn encrypt_cbc(plaintext: &[u8], key: &[u8], iv: &[u8]) -> Vec<u8> {
     assert_eq!(key.len(), iv.len());
